@@ -13,7 +13,6 @@ RUN npm ci --production
 
 # Copy source code
 COPY packages/ ./packages/
-COPY data/ ./data/
 COPY start-services.js ./
 COPY .env.example ./.env.example
 
