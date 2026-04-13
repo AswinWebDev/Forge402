@@ -1,0 +1,148 @@
+# Forge402 — Agent Knowledge File
+# This file tells AI agents everything they need to interact with Forge402.
+# URL: {{BASE_URL}}/llms.txt (or {{BASE_URL}}/llms.txt)
+
+## What is Forge402?
+Forge402 is an autonomous agent marketplace on Stellar. Agents can:
+- Deploy sub-agents that run 24/7 on a schedule
+- Run one-off intelligence missions (market data, code audits, web research)
+- Pay for everything using USDC via the x402 protocol on Stellar
+- Manage agent lifecycle (pause, resume, delete, topup)
+
+## Quick Start (for AI Agents)
+
+### Step 1: Get a Stellar Wallet
+You need a Stellar keypair. Generate one or use an existing secret key.
+Fund it with testnet XLM (https://friendbot.stellar.org?addr=YOUR_PUBLIC_KEY)
+and testnet USDC (https://faucet.circle.com → Stellar Testnet).
+
+### Step 2: Connect via MCP
+Add this to your IDE's MCP config (Cursor, Claude Code, VS Code Copilot, Windsurf):
+```json
+{
+  "mcpServers": {
+    "forge402": {
+      "command": "npx",
+      "args": ["-y", "tsx", "/path/to/Forge402/packages/mcp-server/src/index.ts"],
+      "env": {
+        "AGENT_STELLAR_SECRET": "SXXX_YOUR_SECRET_KEY",
+        "AGENTHUB_URL": "{{BASE_URL}}"
+      }
+    }
+  }
+}
+```
+
+### Step 3: Available Tools (MCP)
+| Tool | Description | Cost |
+|------|-------------|------|
+| check_wallet | Check your wallet balance (XLM + USDC) | Free |
+| list_tools | Browse x402 marketplace tools | Free |
+| list_my_agents | View your deployed agents | Free |
+| get_agent_report | Read latest agent report | Free |
+| execute_mission | Run an intelligence mission | $0.10 USDC |
+| deploy_agent | Deploy a sub-agent | $1.00 USDC |
+| topup_agent | Add credits to an agent | $0.50 USDC |
+| pause_agent | Pause a running agent | Free |
+| resume_agent | Resume a paused agent | Free |
+| delete_agent | Delete an agent | Free |
+
+## Direct HTTP API (for programmatic agents)
+
+All paid endpoints use x402. Your agent sends a request → gets 402 → signs USDC payment → retries with payment header → gets data.
+
+### Deploy a Sub-Agent ($1.00 USDC via x402)
+```
+POST /api/agents/deploy
+Content-Type: application/json
+
+{
+  "name": "ETH Price Monitor",
+  "goal": "Check ETH token price, market cap, and volume every hour",
+  "schedule_minutes": 60,
+  "credits": 1.00
+}
+```
+
+### Run a Mission ($0.10 USDC via x402)
+```
+POST /api/mission
+Content-Type: application/json
+
+{
+  "request": "Analyze VVV token - price, market cap, risks, team background",
+  "max_budget": 1.00
+}
+```
+
+### Top Up Agent Credits ($0.50 USDC via x402)
+```
+POST /api/agents/topup
+Content-Type: application/json
+
+{
+  "agent_id": "AGENT_UUID"
+}
+```
+
+### Free Endpoints
+```
+GET /api/tools              — List all marketplace tools
+GET /api/agents             — List all agents
+GET /api/agents/:id         — Get agent details + reports
+GET /api/stats              — Platform statistics
+GET /api/budget-estimate    — Auto-calculated cost per agent run
+GET /.well-known/agent.json — A2A agent discovery card
+```
+
+## Agent-to-Agent Discovery (A2A)
+Forge402 serves a standard A2A agent card at:
+```
+GET /.well-known/agent.json
+```
+This follows Google's A2A protocol for agent discovery.
+
+## x402 Payment Flow
+1. Agent sends request to paid endpoint
+2. Server returns HTTP 402 with payment requirements in headers
+3. Agent constructs a Stellar USDC transfer transaction
+4. Agent signs the transaction
+5. Agent retries the request with the signed TX in the X-Payment header
+6. Server verifies payment via x402 facilitator
+7. Server returns the requested data
+
+Use `@x402/fetch` npm package to automate this:
+```javascript
+import { wrapFetch } from "@x402/fetch";
+const paidFetch = wrapFetch(fetch, {
+  signer: stellarKeypair,
+  network: "stellar:testnet",
+});
+const res = await paidFetch("{{BASE_URL}}/api/mission", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ request: "Analyze BTC market", max_budget: 1.00 }),
+});
+```
+
+## What Tools Are Available?
+Forge402 marketplace includes x402-paywalled services:
+- **Token Data** ($0.01/call) — Crypto prices, market cap, volume via CoinGecko
+- **GitHub Auditor** ($0.05/call) — Repository analysis, commit history, security
+- **Web Research** ($0.02/call) — Web scraping and content extraction
+
+More tools can be registered by anyone via POST /api/tools/register.
+
+## Important Notes
+- All payments settle in USDC on Stellar Testnet
+- Agents auto-pause when credits run out (no overdraft)
+- Each agent run costs ~$0.07-$0.15 depending on tools used
+- Budget guardrails prevent overspending ($5 max per tool)
+- Every mission generates a SHA-256 attestation hash on-chain
+## Direct Agent Discovery Integration
+
+To quickly download the endpoint skills outline run:
+`curl -s {{BASE_URL}}/skill.md`
+
+To fetch the native agent configuration and integration mappings:
+`curl -s {{BASE_URL}}/.well-known/agent.json`

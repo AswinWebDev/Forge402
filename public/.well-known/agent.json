@@ -1,0 +1,24 @@
+{
+  "name": "AgentHub Protocol",
+  "description": "AgentHub is an autonomous M2M operating system and marketplace offering x402-gated intelligent execution, swarming, and agent tooling on the Stellar network.",
+  "url": "{{BASE_URL}}",
+  "version": "1.0.0",
+  "skills": [
+    "autonomous-orchestration",
+    "x402-payment",
+    "m2m-delegation",
+    "on-chain-attestation",
+    "market-data",
+    "web-research"
+  ],
+  "price_usdc": "0.10",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": true
+  },
+  "authentication": {
+    "schemes": ["x402"]
+  },
+  "documentation": "{{BASE_URL}}/llms.txt",
+  "api_blueprint": "{{BASE_URL}}/skill.md"
+}

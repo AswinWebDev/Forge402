@@ -1,5 +1,5 @@
 /**
- * AgentHub v5 — Unified Backend API
+ * Forge402 v5 — Unified Backend API
  * 
  * SECURITY MODEL:
  * - Identity = Stellar public key (wallet address)
@@ -175,6 +175,30 @@ const app = express();
 if (ALLOWED_ORIGINS === "*") { app.use(cors()); }
 else { app.use(cors({ origin: ALLOWED_ORIGINS.split(",").map(s => s.trim()) })); }
 app.use(express.json());
+
+// Dynamic template rendering for discovery files
+const serveDynamicTemplate = (filePath) => {
+  return (req, res) => {
+    try {
+      const fullPath = path.join(__dirname, "../../public", filePath);
+      if (!fs.existsSync(fullPath)) return res.status(404).json({ error: "Not found" });
+      let content = fs.readFileSync(fullPath, "utf-8");
+      // Replace placeholder with actual backend URL
+      content = content.replace(/\{\{BASE_URL\}\}/g, BASE_URL);
+      res.setHeader('Content-Type', filePath.endsWith('.json') ? 'application/json' : 'text/plain; charset=utf-8');
+      res.send(content);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  };
+};
+
+app.get("/llms.txt", serveDynamicTemplate("llms.txt"));
+app.get("/skill.md", serveDynamicTemplate("skill.md"));
+app.get("/.well-known/agent.json", serveDynamicTemplate(".well-known/agent.json"));
+
+// Serve other static public files
+app.use(express.static(path.join(__dirname, "../../public")));
 
 // Health check (Cloud Run liveness probe)
 app.get("/health", (_, res) => res.json({ status: "ok", uptime: process.uptime(), timestamp: new Date().toISOString() }));
@@ -854,12 +878,12 @@ app.get("/.well-known/agent.json", (_, res) => {
   const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
 
   res.json({
-    name: "AgentHub",
+    name: "Forge402",
     description: "Autonomous AI agent marketplace on Stellar. Deploy agents that run 24/7, pay for x402 tools with USDC, and produce intelligence reports. Agents can spawn sub-agents, manage credits, and operate fully autonomously.",
     url: baseUrl,
     version: "5.1.0",
     provider: {
-      organization: "AgentHub",
+      organization: "Forge402",
       url: baseUrl,
     },
     skills: [
@@ -973,7 +997,7 @@ function rewriteRegistryUrls() {
 }
 
 app.listen(Number(PORT), "0.0.0.0", () => {
-  console.log(`\n⚡ AgentHub v5 Backend — http://localhost:${PORT}`);
+  console.log(`\n⚡ Forge402 Backend — http://localhost:${PORT}`);
   console.log(`   🔐 Security: Wallet-based identity, challenge-response auth, x402 payments`);
   console.log(`   🌍 BASE_URL: ${BASE_URL}`);
 
