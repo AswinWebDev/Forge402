@@ -244,9 +244,28 @@ Extract any token names, repo names, or URLs from the user's request and include
       continue;
     }
 
+    // CRITICAL: Always use the registry's endpoint, NOT Venice's URL.
+    // Venice may hallucinate the production domain (e.g. cloud-run-url:4001)
+    // but tool services only listen on localhost inside the container.
+    let callUrl = step.url;
+    if (tool) {
+      const registryEndpoint = tool.endpoint; // e.g. http://localhost:4001/api/token-data
+      // Extract query string from Venice's planned URL and append to registry endpoint
+      try {
+        const veniceUrl = new URL(step.url);
+        const queryString = veniceUrl.search; // e.g. ?query=bitcoin
+        callUrl = registryEndpoint + queryString;
+      } catch {
+        // If Venice URL is malformed, try to extract query params manually
+        const qIndex = step.url.indexOf("?");
+        callUrl = qIndex >= 0 ? registryEndpoint + step.url.slice(qIndex) : registryEndpoint;
+      }
+      log(`  🔗 Resolved URL: ${callUrl} (from registry)`);
+    }
+
     log(`  ⏳ ${step.tool_id}: ${step.purpose} (~$${stepCost})`);
     try {
-      const r = await executePaidFetch(step.url, step.method, step.body, stellarSecret);
+      const r = await executePaidFetch(callUrl, step.method, step.body, stellarSecret);
       serviceResults[step.tool_id] = r.data;
       if (r.payment_made) {
         const fee = Math.max(stepCost * PLATFORM_FEE_RATE, MIN_PLATFORM_FEE);
