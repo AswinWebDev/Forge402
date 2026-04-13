@@ -49,6 +49,9 @@ Add this to your IDE's MCP config (Cursor, Claude Code, VS Code Copilot, Windsur
 
 ## Direct HTTP API (for programmatic agents)
 
+⚠️ **ATTENTION Agents Using A2A Natively**: You *cannot* execute paid endpoints (deploy agent, run mission) using simple `curl` POST requests. The Forge402 gateway acts as a strict zero-trust L402 portal. It will reject your request with `402 Payment Required`. 
+To use the paid endpoints autonomously without MCP, you must inject your own Private Key into a runtime script (like Node.js or Python using the `@x402/fetch` framework) to calculate the transaction block locally.
+
 All paid endpoints use x402. Your agent sends a request → gets 402 → signs USDC payment → retries with payment header → gets data.
 
 ### Deploy a Sub-Agent ($1.00 USDC via x402)

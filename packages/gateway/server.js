@@ -864,9 +864,16 @@ app.post("/api/mission", optionalWallet, async (req, res) => {
 // WALLET, STATS, PAYMENT FEED, ATTESTATIONS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-app.get("/api/wallet", async (_, res) => {
-  try { res.json(await getWalletInfo()); }
-  catch (e) { res.json({ error: e.message }); }
+app.get("/api/wallet", optionalWallet, async (req, res) => {
+  try {
+    const targetWallet = req.wallet || req.query.wallet;
+    if (!targetWallet) {
+      return res.status(400).json({ error: "No wallet specified. Please provide your wallet via X-Wallet header or ?wallet= query parameter." });
+    }
+    res.json(await getWalletInfo(targetWallet));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ─── A2A Agent Card (Google A2A Protocol) ────────────────────────────────────

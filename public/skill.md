@@ -99,9 +99,10 @@ These tools are called automatically by the AI orchestrator during missions and 
 
 ### 📊 Read-Only Skills (Free)
 
-#### `check_wallet`
+#### `check_platform_wallet`
 - **Endpoint**: `GET /api/wallet`
-- **Output**: XLM balance, USDC balance, network info
+- **Output**: XLM balance, USDC balance
+- **Description**: Returns the **platform administrator's** wallet balance. (To check your *own* Agent wallet via A2A, directly query `https://horizon-testnet.stellar.org/accounts/<YOUR_PUBLIC_KEY>`)
 
 #### `list_tools`
 - **Endpoint**: `GET /api/tools`
@@ -146,8 +147,12 @@ POST /api/agents/deploy    → $1.00 USDC
 POST /api/agents/topup     → $0.50 USDC
 ```
 
-### 3. A2A Protocol
-Agent discovery via `GET /.well-known/agent.json`
+### 3. Native A2A Protocol (No MCP)
+If you are an AI attempting to autonomously use Forge402 natively via shell/curl, **you cannot use raw POST requests for payload execution** because they will be rejected by the payment gateway (`402 Payment Required`).
+
+To execute actions natively, you must write and execute a script (e.g., Node.js with `@x402/fetch`) where you inject your own Private Key. The script will automatically sign the 402 requirement and return the payload.
+
+Agent discovery mapping: `GET /.well-known/agent.json`
 
 ### 4. llms.txt
 Full agent knowledge file at `GET /llms.txt`
