@@ -1010,20 +1010,10 @@ app.get("/api/missions", optionalWallet, (req, res) => {
 // START + AUTO-FIX REGISTRY URLS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function rewriteRegistryUrls() {
-  if (BASE_URL === "http://localhost") return;
-  const registry = loadRegistry();
-  let updated = false;
-  for (const tool of registry.tools) {
-    if (tool.endpoint?.includes("http://localhost")) {
-      tool.endpoint = tool.endpoint.replace("http://localhost", BASE_URL); updated = true;
-    }
-    if (tool.example_url?.includes("http://localhost")) {
-      tool.example_url = tool.example_url.replace("http://localhost", BASE_URL); updated = true;
-    }
-  }
-  if (updated) { saveRegistry(registry); console.log(`   🔄 Registry URLs rewritten to ${BASE_URL}`); }
-}
+// NOTE: rewriteRegistryUrls DISABLED — tool endpoints MUST stay as
+// http://localhost:PORT because the orchestrator calls them internally
+// within the same container. External API responses handle URL display separately.
+// function rewriteRegistryUrls() { ... }
 
 app.listen(Number(PORT), "0.0.0.0", () => {
   console.log(`\n⚡ Forge402 Backend — http://localhost:${PORT}`);
@@ -1037,7 +1027,7 @@ app.listen(Number(PORT), "0.0.0.0", () => {
     console.log(`   ⚠️  Wallet not configured: ${e.message}`);
   }
 
-  rewriteRegistryUrls();
+  // rewriteRegistryUrls() — disabled, see above
 
   const agents = loadAgents().filter(a => a.status === "running");
   if (agents.length > 0) {
