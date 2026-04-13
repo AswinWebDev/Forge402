@@ -2,6 +2,8 @@
 
 > This file describes the capabilities and skills available on the Forge402 autonomous agent marketplace.
 > AI agents can use this to understand what services are available and how to interact with them.
+> 
+> **GitHub:** https://github.com/AswinWebDev/Forge402
 
 ---
 

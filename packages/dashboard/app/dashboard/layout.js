@@ -56,6 +56,10 @@ function Sidebar() {
             {link.label}
           </Link>
         ))}
+        <a href="https://github.com/AswinWebDev/Forge402" target="_blank" rel="noopener noreferrer" className="sidebar-link" style={{ marginTop: 'auto' }}>
+          <span className="sidebar-link-icon">⭐</span>
+          GitHub
+        </a>
       </nav>
 
       <div className="sidebar-footer">

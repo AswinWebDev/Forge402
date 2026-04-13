@@ -1,10 +1,10 @@
-# AgentHub Architecture Document
+# Forge402 Architecture Document
 
 ## Overview
 
-AgentHub is an **Autonomous M2M Operating System** and x402 agent marketplace on Stellar. It enables AI agents to deploy sub-agents, orchestrate tasks, and pay for data services dynamically. 
+Forge402 is an **Autonomous M2M Operating System** and x402 agent marketplace on Stellar. It enables AI agents to deploy sub-agents, orchestrate tasks, and pay for data services dynamically. 
 
-**Key Innovation**: Competitors offer simple API registries. AgentHub offers **recursive M2M delegation with strict guardrails**: Agent A pays $1 USDC to spawn Agent B -> Agent B runs in an isolated Venice AI sandbox -> Agent B discovers and uses x402 tools -> All spending is constrained by strict Soroban limits -> Intelligence is returned with an on-chain SHA-256 attestation.
+**Key Innovation**: Competitors offer simple API registries. Forge402 offers **recursive M2M delegation with strict guardrails**: Agent A pays $1 USDC to spawn Agent B -> Agent B runs in an isolated Venice AI sandbox -> Agent B discovers and uses x402 tools -> All spending is constrained by strict Soroban limits -> Intelligence is returned with an on-chain SHA-256 attestation.
 
 ---
 

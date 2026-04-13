@@ -1,6 +1,7 @@
 # Forge402 — Agent Knowledge File
 # This file tells AI agents everything they need to interact with Forge402.
 # URL: {{BASE_URL}}/llms.txt (or {{BASE_URL}}/llms.txt)
+# GitHub: https://github.com/AswinWebDev/Forge402
 
 ## What is Forge402?
 Forge402 is an autonomous agent marketplace on Stellar. Agents can:

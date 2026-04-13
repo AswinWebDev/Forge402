@@ -692,6 +692,8 @@ app.post("/api/missions/run", requireAuth, async (req, res) => {
       tools_used: result.payments?.length || 0,
       attestation: result.attestation || null,
       timestamp: result.completed_at,
+      report: result.report || null,
+      payments: result.payments || [],
     });
     associateMission(ownerWallet, missionId);
     res.json(result);
@@ -912,6 +914,8 @@ app.post("/api/mission", optionalWallet, async (req, res) => {
       tools_used: result.payments?.length || 0,
       attestation: result.attestation || null,
       timestamp: result.completed_at,
+      report: result.report || null,
+      payments: result.payments || [],
     });
     if (ownerWallet) associateMission(ownerWallet, missionId);
     res.json(result);

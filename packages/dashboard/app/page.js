@@ -140,6 +140,23 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
+        
+        <div className="feature-card" style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.03)' }}>
+          <div className="feature-card-icon">🏆</div>
+          <h3>Judges: Test the MCP Server</h3>
+          <p>Connect your Cursor IDE or Claude Desktop directly to our x402 tools using our Model Context Protocol server. Add this to your <code>mcpServers</code> config:</p>
+          <pre style={{ background: '#0a0a0a', padding: 16, borderRadius: 8, fontSize: 12, marginTop: 12, overflowX: 'auto', border: '1px solid var(--border-subtle)' }}>
+            <code>{`"forge402": {
+  "command": "npm",
+  "args": ["run", "mcp"],
+  "cwd": "/path/to/Forge402",
+  "env": {
+    "AGENT_STELLAR_SECRET": "YOUR_SECRET_KEY",
+    "AGENTHUB_URL": "http://localhost:4000" // Or our Cloud Run URL!
+  }
+}`}</code>
+          </pre>
+        </div>
       </section>
 
       {/* Architecture */}

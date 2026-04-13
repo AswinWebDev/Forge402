@@ -250,7 +250,12 @@ export default function OverviewPage() {
               <thead><tr><th>Request</th><th>Tools</th><th>Spent</th><th>Attestation</th><th>Time</th></tr></thead>
               <tbody>
                 {missions.slice(0, 10).map((m, i) => (
-                  <tr key={i}>
+                  <tr key={i} onClick={() => setMissionResult({ 
+                      budget: { spent: m.spent, remaining: balance }, 
+                      payments: m.payments || [], 
+                      report: m.report || "Looking back... (No report data was saved for this older mission!)", 
+                      attestation: m.attestation
+                  })} style={{ cursor: 'pointer', transition: 'background 0.2s' }} className="hover-row">
                     <td style={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.request}</td>
                     <td><span className="badge badge-blue">{m.tools_used}</span></td>
                     <td className="price-tag">${m.spent?.toFixed(2)}</td>

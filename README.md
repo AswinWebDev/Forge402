@@ -1,4 +1,4 @@
-# AgentHub — Autonomous x402 Agent Marketplace
+# Forge402 — Autonomous x402 Agent Marketplace
 
 > AI agents that discover, evaluate, and pay for data services autonomously using USDC on Stellar.
 
@@ -6,15 +6,50 @@
 
 ---
 
-## What is AgentHub?
+## What is Forge402?
 
-AgentHub is an open-source marketplace where:
+Forge402 is an open-source marketplace where:
 
 - **Tool Providers** deploy x402-protected API services and earn USDC per request
 - **Users** deploy autonomous AI agents that run 24/7 on a schedule
 - **The Platform** provides orchestration (Venice AI), guardrails (budget limits), and curation (admin approval)
 
 Every payment is a verifiable USDC transaction on Stellar. No API keys, no subscriptions, no human in the loop.
+
+---
+
+## 🔌 How to Test the MCP Server (For Judges)
+
+We have included a production-ready **Model Context Protocol (MCP)** server that connects local AI clients (like Claude Desktop or Cursor) to our decentralized, x402-protected intelligence services.
+
+Because the server natively utilizes the `@x402/fetch` SDK, your AI will sign UDC micropayments on Stellar in the background completely autonomously!
+
+**Step-by-Step Setup for Claude Desktop / Cursor:**
+1. Clone this repository and run `npm install`.
+2. Open your Claude Desktop / Cursor MCP configuration file.
+3. Add the following to your `mcpServers` object (replace `/path/to/Forge402` with your actual cloned path!):
+
+```json
+{
+  "mcpServers": {
+    "forge402": {
+      "command": "npm",
+      "args": ["run", "mcp"],
+      "cwd": "/path/to/Forge402",
+      "env": {
+        "AGENT_STELLAR_SECRET": "YOUR_STELLAR_SECRET_KEY",
+        "AGENTHUB_URL": "http://localhost:4000"
+      }
+    }
+  }
+}
+```
+*Note: If you want to connect to our hosted Cloud Run instance instead of local, change the URL to `https://forge402-826948357081.us-central1.run.app`.*
+
+4. **The Magic:** In a new Claude/Cursor chat, simply say: 
+   *"List available tools on Forge402"* or 
+   *"Use the Forge402 sentiment analyzer tool to analyze Bitcoin's latest news."* 
+   Watch as the AI executes the tool and signs the micropayment autonomously!
 
 ---
 
@@ -103,8 +138,8 @@ Every payment is a verifiable USDC transaction on Stellar. No API keys, no subsc
 
 ### 1. Clone and Install
 ```bash
-git clone https://github.com/your-repo/agenthub.git
-cd agenthub
+git clone https://github.com/your-repo/forge402.git
+cd forge402
 npm install
 cp .env.example .env  # configure your keys
 ```
@@ -233,7 +268,7 @@ Agent_Hub/
 
 ## Production Deployment
 
-AgentHub runs on **Stellar Testnet** with real (test) USDC. Judges can verify every payment on [Stellar Explorer](https://stellar.expert/explorer/testnet).
+Forge402 runs on **Stellar Testnet** with real (test) USDC. Judges can verify every payment on [Stellar Explorer](https://stellar.expert/explorer/testnet).
 
 ### Option A: Render (recommended, free tier)
 
@@ -244,7 +279,7 @@ AgentHub runs on **Stellar Testnet** with real (test) USDC. Judges can verify ev
 4. Settings:
    - **Build Command:** `npm install`
    - **Start Command:** `node start-services.js`  
-   - **Environment:** Add all `.env` variables + set `BASE_URL` to your Render URL (e.g., `https://agenthub-api.onrender.com`)
+   - **Environment:** Add all `.env` variables + set `BASE_URL` to your Render URL (e.g., `https://forge402-api.onrender.com`)
 5. Deploy → Backend is live at `https://your-app.onrender.com`
 
 **Frontend (Next.js):**
@@ -257,8 +292,8 @@ AgentHub runs on **Stellar Testnet** with real (test) USDC. Judges can verify ev
 
 ```bash
 # On your server:
-git clone https://github.com/your-repo/agenthub.git
-cd agenthub && npm install
+git clone https://github.com/your-repo/forge402.git
+cd forge402 && npm install
 cp .env.example .env  # configure keys
 
 # Set production URL
