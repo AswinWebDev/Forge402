@@ -114,11 +114,12 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24, alignItems: 'stretch' }}>
         {/* Your Agents */}
-        <div className="card">
+        <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>🤖 Your Agents</h3>
-          {agents.length > 0 ? agents.slice(0, 5).map(a => (
+          <div style={{ flex: 1, overflowY: 'auto', maxHeight: 320 }}>
+          {agents.length > 0 ? agents.slice(0, 8).map(a => (
             <Link key={a.id} href={`/dashboard/agents`}
               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: 8, marginBottom: 4, background: 'var(--bg-primary)', textDecoration: 'none' }}>
               <div>
@@ -132,22 +133,23 @@ export default function OverviewPage() {
               {connected ? 'No agents yet. Deploy one from the Agents tab.' : 'Connect wallet to see your agents.'}
             </p>
           )}
+          </div>
         </div>
 
         {/* Live Payment Feed */}
-        <div className="card">
+        <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="pulse-dot green" /> Live Payment Feed
           </h3>
-          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+          <div style={{ flex: 1, overflowY: 'auto', maxHeight: 320 }}>
             {payments.length > 0 ? payments.map((p, i) => (
               <a key={p.id || i} href={p.verify_url} target="_blank" rel="noopener"
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderRadius: 8, marginBottom: 4, background: 'var(--bg-primary)', textDecoration: 'none', transition: 'background 0.2s' }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{p.service}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{new Date(p.timestamp).toLocaleTimeString()}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--mono)' }}>{new Date(p.timestamp).toLocaleTimeString()}</div>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--accent-teal)' }}>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'var(--green)' }}>
                   ${p.cost?.toFixed(2)}
                 </div>
               </a>
