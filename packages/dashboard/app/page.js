@@ -32,7 +32,7 @@ export default function LandingPage() {
           <Link href="/dashboard/docs">Docs</Link>
           <Link href="/dashboard/tools">Marketplace</Link>
           <a href="https://github.com/AswinWebDev/Forge402" target="_blank" rel="noopener">GitHub</a>
-          <Link href="/dashboard" className="nav-cta">Launch App →</Link>
+          <Link href="/dashboard/wallet" className="nav-cta">Connect Wallet →</Link>
         </div>
       </nav>
 
@@ -52,7 +52,7 @@ export default function LandingPage() {
           verified intelligence reports without human intervention.
         </p>
         <div className="hero-actions">
-          <Link href="/dashboard" className="hero-btn-primary">Open Dashboard</Link>
+          <Link href="/dashboard" className="hero-btn-primary">Launch App</Link>
           <Link href="/dashboard/docs" className="hero-btn-secondary">Read the Docs</Link>
         </div>
 
@@ -106,16 +106,18 @@ export default function LandingPage() {
         <div className="feature-card">
           <div className="feature-card-icon">🤖</div>
           <h3>For AI Agents</h3>
-          <p>Agents interact via x402-paywalled HTTP endpoints or MCP tools. Deploy sub-agents, pay for services, and receive intelligence — fully autonomous.</p>
+          <p>Agents interact via x402-paywalled HTTP endpoints, MCP tools, or A2A discovery. Deploy sub-agents, pay for services, and receive intelligence — fully autonomous.</p>
           <div style={{ display: 'grid', gap: 6, marginTop: 18 }}>
             {[
-              ['POST /api/agents/deploy', '$1.00'],
-              ['POST /api/mission', '$0.10'],
-              ['POST /api/agents/topup', '$0.50'],
-            ].map(([endpoint, price]) => (
-              <div key={endpoint} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 8, fontSize: 12, border: '1px solid var(--border-subtle)' }}>
-                <code style={{ background: 'none', padding: 0, fontSize: 11 }}>{endpoint}</code>
-                <span style={{ fontFamily: 'var(--mono)', color: 'var(--gold)', fontWeight: 700 }}>{price}</span>
+              ['MCP Server', 'Cursor · Claude · VS Code'],
+              ['A2A Protocol', 'Agent discovery'],
+              ['llms.txt', 'Agent knowledge file'],
+              ['POST /api/mission', '$0.10 USDC'],
+              ['POST /api/agents/deploy', '$1.00 USDC'],
+            ].map(([title, desc]) => (
+              <div key={title} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 8, fontSize: 12, border: '1px solid var(--border-subtle)' }}>
+                <strong style={{ color: 'var(--text-primary)' }}>{title}</strong>
+                <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{desc}</span>
               </div>
             ))}
           </div>
@@ -123,13 +125,13 @@ export default function LandingPage() {
         <div className="feature-card">
           <div className="feature-card-icon">👤</div>
           <h3>For Humans</h3>
-          <p>Manage your agent fleet via dashboard, IDE (MCP), or API. Deploy agents, register tools, and watch real-time payments — all verifiable on Stellar.</p>
+          <p>Manage your agent fleet visually. Deploy agents, register tools, monitor credits, and watch real-time x402 payments — all verifiable on Stellar.</p>
           <div style={{ display: 'grid', gap: 6, marginTop: 18 }}>
             {[
-              ['Dashboard', 'Visual management & reports'],
-              ['MCP Server', 'Cursor · Claude · VS Code'],
-              ['A2A Protocol', 'Agent discovery'],
-              ['llms.txt', 'Agent knowledge file'],
+              ['Dashboard', 'Deploy, monitor & manage agents'],
+              ['Freighter Wallet', 'Sign in with Stellar wallet'],
+              ['Tool Marketplace', 'Register & browse x402 tools'],
+              ['On-Chain Verification', 'Every payment on Stellar Explorer'],
             ].map(([title, desc]) => (
               <div key={title} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 8, fontSize: 12, border: '1px solid var(--border-subtle)' }}>
                 <strong style={{ color: 'var(--text-primary)' }}>{title}</strong>

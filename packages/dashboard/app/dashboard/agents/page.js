@@ -151,7 +151,7 @@ export default function AgentsPage() {
                   <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{agent.goal?.slice(0, 80)}{agent.goal?.length > 80 ? '...' : ''}</p>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 90 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: agent.credits_remaining > 0.05 ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: agent.credits_remaining > 0.05 ? 'var(--green)' : 'var(--red)' }}>
                     ${agent.credits_remaining?.toFixed(2)}
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{agent.total_runs} runs · ${agent.total_spent?.toFixed(2)} used</div>
@@ -191,7 +191,7 @@ export default function AgentsPage() {
             <div style={{ padding: '12px 16px', background: 'var(--bg-primary)', borderRadius: 8, marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Credits remaining</span>
-                <span style={{ fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: 700, color: agentDetail.credits_remaining > 0.05 ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                <span style={{ fontSize: 13, fontFamily: 'var(--mono)', fontWeight: 700, color: agentDetail.credits_remaining > 0.05 ? 'var(--green)' : 'var(--red)' }}>
                   ${agentDetail.credits_remaining?.toFixed(2)} / ${agentDetail.credit_balance?.toFixed(2)}
                 </span>
               </div>
@@ -199,7 +199,7 @@ export default function AgentsPage() {
                 <div style={{
                   height: '100%', borderRadius: 3,
                   width: `${Math.max(0, Math.min(100, (agentDetail.credits_remaining / (agentDetail.credit_balance || 1)) * 100))}%`,
-                  background: agentDetail.credits_remaining > 0.10 ? 'var(--accent-green)' : 'var(--accent-red)',
+                  background: agentDetail.credits_remaining > 0.10 ? 'var(--green)' : 'var(--red)',
                   transition: 'width 0.3s',
                 }} />
               </div>
@@ -223,8 +223,8 @@ export default function AgentsPage() {
               )}
             </div>
 
-            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>📋 Latest Reports</h4>
-            {(agentDetail.reports || []).slice(-3).reverse().map((report, i) => (
+            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>📋 Reports ({(agentDetail.reports || []).length})</h4>
+            {(agentDetail.reports || []).slice().reverse().map((report, i) => (
               <div key={i} style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>
                   {new Date(report.timestamp).toLocaleString()} · ${report.budget?.spent?.toFixed(2)} USDC · {report.payments?.length} tools
