@@ -9,12 +9,12 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN npm ci --production
+RUN npm ci --omit=dev
 
 # Copy source code
 COPY packages/ ./packages/
+COPY public/ ./public/
 COPY start-services.js ./
-COPY .env.example ./.env.example
 
 # Create data directories
 RUN mkdir -p data/agents
@@ -22,10 +22,6 @@ RUN mkdir -p data/agents
 # The backend listens on PORT env (default 4000)
 # Cloud Run sets PORT automatically
 ENV NODE_ENV=production
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD node -e "fetch('http://localhost:' + (process.env.PORT || 4000) + '/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 
 # Expose default port
 EXPOSE 4000
