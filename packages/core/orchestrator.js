@@ -184,9 +184,10 @@ export async function executeAutonomousMission(userRequest, options = {}) {
   // ─── Phase 1: Venice AI plans ─────────────────────────────────────────────
   log("🧠 Phase 1: Planning...");
 
-  // Build detailed tool descriptions WITH params and examples
+  // Build tool descriptions — DO NOT include endpoint URLs to prevent Venice from
+  // hallucinating production domains. We always resolve URLs from the registry.
   const toolDescriptions = registry.map(t =>
-    `- ID: ${t.id} | ${t.name} | ${t.price} | Method: ${t.method}\n  Description: ${t.description}\n  Params: ${t.params || "none"}\n  Example: ${t.example_url || t.endpoint}`
+    `- ID: ${t.id} | ${t.name} | ${t.price} | Method: ${t.method}\n  Description: ${t.description}\n  Params: ${t.params || "none"}`
   ).join("\n");
 
   let plan;
@@ -202,15 +203,15 @@ USER REQUEST: "${userRequest}"
 AVAILABLE TOOLS:
 ${toolDescriptions}
 
-CRITICAL: You MUST construct complete URLs with all required query parameters. Look at the Params and Example fields for each tool.
+IMPORTANT: For the "url" field, use this format EXACTLY:
+- token-data: http://localhost:4001/api/token-data?query=TERM
+- github-auditor: http://localhost:4002/api/audit?repo=OWNER/REPO
+- web-research: http://localhost:4003/api/research (POST with body {"url":"https://..."})
+
+NEVER use any other domain. ALWAYS use http://localhost with the port shown above.
 
 Return this exact JSON structure:
-{"strategy":"one sentence","steps":[{"tool_id":"...","url":"FULL URL with params","method":"GET or POST","body":null,"purpose":"why"}]}
-
-EXAMPLES of correct URLs:
-- Token lookup: http://localhost:4001/api/token-data?query=VVV
-- Repo audit: http://localhost:4002/api/audit?repo=stellar/soroban-sdk
-- Web scrape: http://localhost:4003/api/research (POST with body {"url":"https://..."})
+{"strategy":"one sentence","steps":[{"tool_id":"...","url":"http://localhost:PORT/path?params","method":"GET or POST","body":null,"purpose":"why"}]}
 
 Extract any token names, repo names, or URLs from the user's request and include them in the URLs. Plan only 1-2 initial steps — the system auto-discovers follow-ups.` },
       ],
