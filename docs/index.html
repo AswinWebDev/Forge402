@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentHub — Autonomous x402 Agent Marketplace on Stellar</title>
+    <meta name="description" content="The intelligent orchestration layer for AI agent micropayments. Discover, pay, and aggregate x402 services autonomously using USDC on Stellar.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0b0f;
+            --bg-secondary: #12131a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.06);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8b8fa3;
+            --text-muted: #5a5e73;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.15);
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --cyan: #06b6d4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        .gradient-orb {
+            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
+            animation: float 20s ease-in-out infinite;
+        }
+        .orb-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; right: -100px; }
+        .orb-2 { width: 400px; height: 400px; background: var(--cyan); bottom: 200px; left: -100px; animation-delay: 7s; }
+        .orb-3 { width: 500px; height: 500px; background: #8b5cf6; bottom: -100px; right: 200px; animation-delay: 14s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(30px, -30px); }
+            66% { transform: translate(-20px, 20px); }
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+        /* ─── Nav ─── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10, 11, 15, 0.8); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; height: 64px; }
+        .logo { font-weight: 700; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 12px var(--accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-badge { background: var(--accent-glow); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.2); }
+
+        /* ─── Hero ─── */
+        .hero { padding: 160px 0 100px; text-align: center; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 6px 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 32px; }
+        .hero-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .hero h1 { font-size: clamp(36px, 5vw, 64px); font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -0.02em; }
+        .hero h1 .gradient { background: linear-gradient(135deg, var(--accent) 0%, var(--cyan) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 18px; color: var(--text-secondary); max-width: 640px; margin: 0 auto 40px; line-height: 1.7; }
+        .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 32px rgba(99, 102, 241, 0.4); }
+        .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--text-muted); }
+
+        /* ─── Stats ─── */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 120px; }
+        .stat { background: var(--bg-secondary); padding: 32px; text-align: center; }
+        .stat-value { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+        .stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* ─── Sections ─── */
+        section { padding: 100px 0; }
+        .section-label { font-size: 13px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+        .section-title { font-size: clamp(28px, 3.5vw, 40px); font-weight: 700; margin-bottom: 16px; letter-spacing: -0.01em; }
+        .section-desc { font-size: 16px; color: var(--text-secondary); max-width: 600px; margin-bottom: 48px; line-height: 1.7; }
+
+        /* ─── Flow Diagram ─── */
+        .flow { display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; align-items: center; gap: 0; margin-bottom: 60px; }
+        .flow-step { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 24px; text-align: center; transition: all 0.3s; }
+        .flow-step:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(99, 102, 241, 0.08); }
+        .flow-icon { font-size: 32px; margin-bottom: 12px; }
+        .flow-step h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .flow-step p { font-size: 13px; color: var(--text-secondary); }
+        .flow-arrow { text-align: center; color: var(--text-muted); font-size: 24px; }
+        .flow-price { display: inline-block; background: rgba(34, 197, 94, 0.1); color: var(--green); padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-top: 8px; font-family: 'JetBrains Mono', monospace; }
+
+        /* ─── Code Block ─── */
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .code-header { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+        .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .code-dot:nth-child(1) { background: #ef4444; }
+        .code-dot:nth-child(2) { background: #f59e0b; }
+        .code-dot:nth-child(3) { background: #22c55e; }
+        .code-title { font-size: 12px; color: var(--text-muted); margin-left: 8px; font-family: 'JetBrains Mono', monospace; }
+        .code-body { padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: var(--text-secondary); overflow-x: auto; white-space: pre; }
+        .code-body .keyword { color: var(--accent); }
+        .code-body .string { color: var(--green); }
+        .code-body .comment { color: var(--text-muted); font-style: italic; }
+        .code-body .number { color: var(--amber); }
+
+        /* ─── Cards Grid ─── */
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.3s; }
+        .card:hover { border-color: rgba(99, 102, 241, 0.3); transform: translateY(-2px); }
+        .card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 20px; }
+        .card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+        .card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+        .card-price { font-family: 'JetBrains Mono', monospace; color: var(--green); font-weight: 600; font-size: 14px; margin-top: 16px; }
+
+        /* ─── Comparison Table ─── */
+        .comparison { width: 100%; border-collapse: separate; border-spacing: 0; overflow: hidden; border-radius: 16px; border: 1px solid var(--border); }
+        .comparison th { background: var(--bg-secondary); padding: 16px 24px; text-align: left; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+        .comparison td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text-secondary); }
+        .comparison tr:last-child td { border-bottom: none; }
+        .comparison .highlight { color: var(--accent); font-weight: 600; }
+        .check { color: var(--green); font-weight: 700; }
+        .cross { color: var(--red); }
+
+        /* ─── CTA ─── */
+        .cta { text-align: center; padding: 100px 0 120px; }
+        .cta h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+        .cta p { color: var(--text-secondary); font-size: 16px; max-width: 480px; margin: 0 auto 32px; }
+
+        /* ─── Footer ─── */
+        footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; }
+        footer p { font-size: 13px; color: var(--text-muted); }
+        footer a { color: var(--text-secondary); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .flow { grid-template-columns: 1fr; gap: 12px; }
+            .flow-arrow { transform: rotate(90deg); }
+            .cards { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+
+    <nav>
+        <div class="container">
+            <div class="logo"><div class="logo-dot"></div> AgentHub</div>
+            <div class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#services">Services</a>
+                <a href="#comparison">Why AgentHub</a>
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </div>
+            <div class="nav-badge">Stellar Testnet</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-badge"><div class="dot"></div> Built for Stellar Hacks 2026</div>
+            <h1>The Brain That Hires<br><span class="gradient">x402 Services</span></h1>
+            <p>AgentHub is an autonomous agent wallet that discovers, pays for, and aggregates x402-protected services on Stellar — turning vague intents into comprehensive research reports, with real USDC micropayments.</p>
+            <div class="hero-buttons">
+                <a href="#how-it-works" class="btn btn-primary">See How It Works</a>
+                <a href="https://github.com" class="btn btn-secondary" target="_blank">View Source ↗</a>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat"><div class="stat-value" style="color: var(--accent);">3</div><div class="stat-label">x402 Services</div></div>
+            <div class="stat"><div class="stat-value" style="color: var(--green);">USDC</div><div class="stat-label">Settlement Asset</div></div>
+            <div class="stat"><div class="stat-value" style="color: var(--cyan);">~5s</div><div class="stat-label">Settlement Time</div></div>
+            <div class="stat"><div class="stat-value" style="color: var(--amber);">&lt;$0.01</div><div class="stat-label">Tx Fee</div></div>
+        </div>
+
+        <!-- How It Works -->
+        <section id="how-it-works">
+            <div class="section-label">How It Works</div>
+            <div class="section-title">Intent → Intelligence → Payment → Data</div>
+            <div class="section-desc">Other x402 projects require agents to know exactly which endpoint to call. AgentHub takes a natural language intent and autonomously plans, pays for, and aggregates multiple services.</div>
+
+            <div class="flow">
+                <div class="flow-step">
+                    <div class="flow-icon">💬</div>
+                    <h3>1. Natural Language</h3>
+                    <p>"Is VVV safe to invest in?"</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-icon">🧠</div>
+                    <h3>2. Venice AI Plans</h3>
+                    <p>Orchestrator selects 3 services, plans execution order</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-icon">💸</div>
+                    <h3>3. Auto-Pay x402</h3>
+                    <p>Agent pays USDC per service, gets real data back</p>
+                    <div class="flow-price">$0.08 USDC total</div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+                    <div class="code-title">x402 payment flow — what happens under the hood</div>
+                </div>
+                <div class="code-body"><span class="comment">// 1. Agent requests token data from x402 service</span>
+GET http://localhost:4001/api/token-data?query=VVV
+<span class="keyword">← 402 Payment Required</span>
+   X-Payment: { scheme: "exact", price: "$0.01", network: "stellar:testnet" }
+
+<span class="comment">// 2. AgentHub x402 client signs a Soroban auth entry</span>
+<span class="keyword">→</span> Signs USDC transfer authorization with agent's private key
+
+<span class="comment">// 3. Retries with payment proof in headers</span>
+GET http://localhost:4001/api/token-data?query=VVV
+   X-Payment-Signature: { payload: "signed_auth_entry..." }
+<span class="keyword">← 200 OK</span>
+   X-Payment-Receipt: { txHash: "<span class="string">a8f3c2...</span>", settled: true }
+   Body: { <span class="string">"id"</span>: <span class="string">"venice-token"</span>, <span class="string">"market_cap"</span>: <span class="number">354575030</span> ... }
+
+<span class="comment">// USDC settled on Stellar Testnet in ~5 seconds</span>
+<span class="comment">// Verifiable at: https://stellar.expert/explorer/testnet/tx/a8f3c2...</span></div>
+            </div>
+        </section>
+
+        <!-- Services -->
+        <section id="services">
+            <div class="section-label">Service Marketplace</div>
+            <div class="section-title">x402-Protected Microservices</div>
+            <div class="section-desc">Each service is an independent Express server behind a real x402 paywall. Anyone can deploy new services and start earning USDC.</div>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon" style="background: rgba(99, 102, 241, 0.1);">🪙</div>
+                    <h3>Token Data Service</h3>
+                    <p>Deep crypto metrics from CoinGecko. Price, market cap, 24h volume, FDV, GitHub URL, contract address, categories, and project description.</p>
+                    <div class="card-price">$0.01 USDC / request</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" style="background: rgba(6, 182, 212, 0.1);">🔍</div>
+                    <h3>GitHub Auditor Service</h3>
+                    <p>Repository trust analysis. Commit velocity, contributor diversity, language breakdown, license check, security policies, and computed trust score.</p>
+                    <div class="card-price">$0.05 USDC / request</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" style="background: rgba(139, 92, 246, 0.1);">🌐</div>
+                    <h3>Web Research Service</h3>
+                    <p>Fetch and extract text from any URL. Strips HTML to readable content. Analyze project websites, whitepapers, and docs that LLMs can't access directly.</p>
+                    <div class="card-price">$0.02 USDC / request</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison -->
+        <section id="comparison">
+            <div class="section-label">Why AgentHub Wins</div>
+            <div class="section-title">Intelligence vs. Dumb Pipes</div>
+            <div class="section-desc">Every other x402 project builds endpoints. We build the brain that uses them all.</div>
+
+            <table class="comparison">
+                <thead>
+                    <tr><th>Feature</th><th>Typical x402 Project</th><th class="highlight">AgentHub</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>AI Orchestration</td><td class="cross">✗ None</td><td class="check">✓ Venice AI plans multi-step strategies</td></tr>
+                    <tr><td>Multi-Service Chaining</td><td class="cross">✗ Manual per endpoint</td><td class="check">✓ Autonomous (AI decides order + params)</td></tr>
+                    <tr><td>Real x402 Payments</td><td class="check">✓ USDC</td><td class="check">✓ USDC via Coinbase Facilitator</td></tr>
+                    <tr><td>Extensible to Any Service</td><td class="cross">✗ Fixed endpoints</td><td class="check">✓ Any x402 URL on the internet</td></tr>
+                    <tr><td>MCP-Native</td><td class="cross">✗ Custom CLI</td><td class="check">✓ Works in Cursor, Claude, any MCP IDE</td></tr>
+                    <tr><td>On-Chain Registry</td><td class="cross">✗ Hardcoded</td><td class="check">✓ Soroban smart contract (Registry + Escrow)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta">
+            <h2>Built for the Machine Economy</h2>
+            <p>Agents don't need dashboards or API keys. They need wallets, intelligence, and services they can pay for per-request.</p>
+            <div class="hero-buttons">
+                <a href="https://github.com" class="btn btn-primary" target="_blank">GitHub Repository ↗</a>
+                <a href="https://stellar.expert/explorer/testnet" class="btn btn-secondary" target="_blank">Stellar Explorer ↗</a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>AgentHub — Built for <a href="https://dorahacks.io">Stellar Hacks 2026</a> · Powered by <a href="https://stellar.org/x402">x402</a> + <a href="https://venice.ai">Venice AI</a></p>
+        </div>
+    </footer>
+</body>
+</html>

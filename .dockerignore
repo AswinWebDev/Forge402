@@ -1,0 +1,13 @@
+node_modules
+.git
+.next
+packages/dashboard/node_modules
+packages/dashboard/.next
+packages/tools/web-search
+packages/tools/dummy-auditor
+packages/orchestrator
+*.md
+!README.md
+.env
+.DS_Store
+contracts/target

@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+packages/dashboard/.env.local
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Private/Competition files
+comp.md
+Prev_hack_info.md
+Resources.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (runtime-generated)
+data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+*.tgz
+.cursor/mcp.json

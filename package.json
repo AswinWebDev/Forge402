@@ -1,0 +1,40 @@
+{
+  "name": "agenthub",
+  "version": "3.0.0",
+  "description": "Autonomous x402 Agent Marketplace on Stellar — discover, pay, and aggregate AI services with USDC micropayments",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup-wallets.js",
+    "services": "node start-services.js",
+    "mcp": "npx tsx packages/mcp-server/src/index.ts",
+    "token-service": "node packages/tools/token-data/server.js",
+    "auditor-service": "node packages/tools/github-auditor/server.js",
+    "research-service": "node packages/tools/web-research/server.js"
+  },
+  "keywords": [
+    "x402",
+    "stellar",
+    "agentic",
+    "mcp",
+    "ai",
+    "micropayments",
+    "usdc"
+  ],
+  "author": "AgentHub Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@stellar/stellar-sdk": "^15.0.1",
+    "@x402/core": "^2.9.0",
+    "@x402/express": "^2.9.0",
+    "@x402/fetch": "^2.9.0",
+    "@x402/stellar": "^2.9.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "openai": "^6.34.0",
+    "stellar-hd-wallet": "^1.0.2",
+    "zod": "^4.3.6"
+  }
+}
