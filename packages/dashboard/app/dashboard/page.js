@@ -41,12 +41,19 @@ export default function OverviewPage() {
     setMissionLoading(true);
     setMissionResult(null);
     try {
-      const res = await apiFetch('/api/mission', {
+      const res = await apiFetch('/api/missions/run', {
         method: 'POST',
         body: JSON.stringify({ request: missionInput, max_budget: Number(missionBudget) }),
       });
-      setMissionResult(await res.json());
+      const data = await res.json();
+      if (!res.ok) {
+        setMissionResult({ error: data.error || 'Mission failed' });
+      } else {
+        setMissionResult(data);
+      }
       loadAll();
+      // Scroll to results
+      setTimeout(() => document.getElementById('mission-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     } catch (e) {
       setMissionResult({ error: e.message });
     }
@@ -165,33 +172,67 @@ export default function OverviewPage() {
             onChange={e => setMissionInput(e.target.value)}
             placeholder="e.g. Analyze VVV token — price, GitHub audit, website research"
             style={{ flex: 1 }}
-            onKeyDown={e => e.key === 'Enter' && runMission()}
+            onKeyDown={e => e.key === 'Enter' && !missionLoading && runMission()}
+            disabled={missionLoading}
           />
-          <input className="form-input" type="number" step="0.01" value={missionBudget} onChange={e => setMissionBudget(e.target.value)} style={{ width: 100 }} />
-          <button className="btn btn-primary" onClick={runMission} disabled={missionLoading || !connected}>
+          <input className="form-input" type="number" step="0.01" value={missionBudget} onChange={e => setMissionBudget(e.target.value)} style={{ width: 100 }} disabled={missionLoading} />
+          <button className="btn btn-primary" onClick={runMission} disabled={missionLoading || !connected} style={{ minWidth: 120 }}>
             {missionLoading ? '⏳ Running...' : '🚀 Run'}
           </button>
         </div>
 
-        {missionResult && (
-          <div style={{ marginTop: 16 }}>
+        {/* Loading State */}
+        {missionLoading && (
+          <div style={{ padding: '24px 20px', background: 'rgba(79, 138, 255, 0.06)', border: '1px solid rgba(79, 138, 255, 0.15)', borderRadius: 12, marginTop: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+              <div style={{
+                width: 14, height: 14, borderRadius: '50%',
+                border: '2px solid rgba(79, 138, 255, 0.3)',
+                borderTopColor: 'var(--blue)',
+                animation: 'spin 0.8s linear infinite',
+              }} />
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Mission in progress...</div>
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.8 }}>
+              <div>🧠 Venice AI is planning which tools to call...</div>
+              <div>💳 x402 payments being signed on Stellar...</div>
+              <div>📊 This typically takes 15-30 seconds.</div>
+            </div>
+            <style jsx>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
+        {/* Mission Result */}
+        {missionResult && !missionLoading && (
+          <div id="mission-result" style={{ marginTop: 16 }}>
             {missionResult.error ? (
-              <div style={{ padding: 16, background: 'rgba(239,68,68,0.1)', borderRadius: 8, fontSize: 13, color: 'var(--accent-red)' }}>
-                Error: {missionResult.error}
+              <div style={{ padding: 16, background: 'rgba(239,68,68,0.1)', borderRadius: 12, fontSize: 13, color: 'var(--red)' }}>
+                ❌ Error: {missionResult.error}
               </div>
             ) : (
               <>
-                <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-                  <div className="badge badge-green">Spent: ${missionResult.budget?.spent?.toFixed(2)}</div>
-                  <div className="badge badge-blue">{missionResult.payments?.length} tools</div>
-                  {missionResult.attestation && <div className="badge badge-amber">🔗 {missionResult.attestation.hash?.slice(0, 12)}...</div>}
+                <div style={{ padding: '16px 20px', background: 'rgba(34, 197, 94, 0.06)', border: '1px solid rgba(34, 197, 94, 0.15)', borderRadius: 12, marginBottom: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--green)', marginBottom: 10 }}>✅ Mission Complete</div>
+                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                    <div className="badge badge-green">Spent: ${missionResult.budget?.spent?.toFixed(2)}</div>
+                    <div className="badge badge-blue">{missionResult.payments?.length} tools used</div>
+                    <div className="badge badge-purple">Budget left: ${missionResult.budget?.remaining?.toFixed(2)}</div>
+                    {missionResult.attestation && <div className="badge badge-amber">🔗 {missionResult.attestation.hash?.slice(0, 12)}...</div>}
+                  </div>
                 </div>
-                {missionResult.payments?.map((p, i) => (
-                  <a key={i} href={p.verify_url} target="_blank" rel="noopener" style={{ display: 'block', fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--accent-blue)', padding: '4px 0' }}>
-                    {p.service}: ${p.cost?.toFixed(2)} → TX {p.tx_hash?.slice(0, 16)}... ↗
-                  </a>
-                ))}
-                <div className="report-viewer" style={{ marginTop: 12, maxHeight: 400 }}>{missionResult.report}</div>
+                {missionResult.payments?.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>PAYMENT RECEIPTS</div>
+                    {missionResult.payments.map((p, i) => (
+                      <a key={i} href={p.verify_url} target="_blank" rel="noopener" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, fontFamily: 'var(--mono)', color: 'var(--blue)', padding: '6px 12px', background: 'var(--bg-primary)', borderRadius: 8, marginBottom: 4, textDecoration: 'none' }}>
+                        <span>{p.service}</span>
+                        <span style={{ color: 'var(--green)' }}>${p.cost?.toFixed(2)} → TX {p.tx_hash?.slice(0, 16)}... ↗</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>INTELLIGENCE REPORT</div>
+                <div className="report-viewer" style={{ maxHeight: 500 }}>{missionResult.report}</div>
               </>
             )}
           </div>

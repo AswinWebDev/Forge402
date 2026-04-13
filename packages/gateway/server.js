@@ -662,6 +662,44 @@ app.post("/api/agents/:id/deposit", requireAuth, (req, res) => {
   });
 });
 
+// Run mission (dashboard — uses session auth + credits, bypasses x402)
+app.post("/api/missions/run", requireAuth, async (req, res) => {
+  const { request, max_budget } = req.body;
+  if (!request) return res.status(400).json({ error: "Provide { request: '...' }" });
+
+  const ownerWallet = req.wallet;
+  const budget = Number(max_budget) || 1.00;
+
+  // Check credit balance
+  const account = getOrCreateAccount(ownerWallet);
+  if (account.balance < 0.10) {
+    return res.status(400).json({ error: `Insufficient credits ($${account.balance.toFixed(2)}). Deposit USDC first.` });
+  }
+
+  try {
+    const result = await executeAutonomousMission(request, { maxBudget: budget });
+    
+    // Deduct mission cost from credits (minimum $0.10 for running a mission)
+    const missionCost = Math.max(result.budget?.spent || 0, 0.10);
+    account.balance = Math.max(0, account.balance - missionCost);
+    account.total_spent = (account.total_spent || 0) + missionCost;
+    saveAccount(account);
+
+    const missionId = crypto.randomUUID();
+    saveMission({
+      id: missionId, request, owner_wallet: ownerWallet,
+      max_budget: budget, spent: result.budget?.spent || 0,
+      tools_used: result.payments?.length || 0,
+      attestation: result.attestation || null,
+      timestamp: result.completed_at,
+    });
+    associateMission(ownerWallet, missionId);
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // List agents (filtered by wallet)
 app.get("/api/agents", optionalWallet, (req, res) => {
   let agents = loadAgents();
