@@ -113,15 +113,22 @@ async function executePaidFetch(url, method = "GET", body = null, stellarSecret 
     init.body = typeof body === "string" ? body : JSON.stringify(body);
     init.headers = { "Content-Type": "application/json" };
   }
-  const response = await paidFetch(url, init);
-  const text = await response.text();
-  let receipt = null;
-  if (httpClient) {
-    try { receipt = httpClient.getPaymentSettleResponse(h => response.headers.get(h)); } catch {}
+  console.log(`[x402] Calling ${method} ${url}`);
+  try {
+    const response = await paidFetch(url, init);
+    console.log(`[x402] Response: ${response.status} from ${url}`);
+    const text = await response.text();
+    let receipt = null;
+    if (httpClient) {
+      try { receipt = httpClient.getPaymentSettleResponse(h => response.headers.get(h)); } catch {}
+    }
+    let parsed;
+    try { parsed = JSON.parse(text); } catch { parsed = text; }
+    return { status: response.status, payment_made: receipt !== null, receipt, data: parsed };
+  } catch (e) {
+    console.error(`[x402] FAILED ${method} ${url}:`, e.message, e.cause || "");
+    throw e;
   }
-  let parsed;
-  try { parsed = JSON.parse(text); } catch { parsed = text; }
-  return { status: response.status, payment_made: receipt !== null, receipt, data: parsed };
 }
 
 // ─── Parse price string to number ────────────────────────────────────────────
@@ -251,6 +258,7 @@ Extract any token names, repo names, or URLs from the user's request and include
       }
       log(`  ✅ ${step.tool_id} (HTTP ${r.status}, paid: ${r.payment_made}, total: $${totalSpent.toFixed(2)})`);
     } catch (e) {
+      console.error(`[MISSION] Tool ${step.tool_id} FAILED:`, e.message, e.stack?.split("\n").slice(0, 3).join(" | "));
       log(`  ❌ ${step.tool_id}: ${e.message}`);
       serviceResults[step.tool_id] = { error: e.message };
     }
