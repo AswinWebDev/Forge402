@@ -10,10 +10,79 @@
  *   The Next.js dashboard runs separately: cd packages/dashboard && npm run dev
  */
 import { spawn } from "child_process";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// ─── Seed Registry ──────────────────────────────────────────────────────────
+// Pre-populates the tool registry if it doesn't exist (fresh Cloud Run deploy)
+
+const DATA_DIR = path.join(__dirname, "data");
+const REGISTRY_FILE = path.join(DATA_DIR, "registry.json");
+const AGENTS_DIR = path.join(DATA_DIR, "agents");
+
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(AGENTS_DIR)) fs.mkdirSync(AGENTS_DIR, { recursive: true });
+
+if (!fs.existsSync(REGISTRY_FILE)) {
+  const PROVIDER_PUB = process.env.STELLAR_PROVIDER_PUBLIC || "unknown";
+  const defaultRegistry = {
+    tools: [
+      {
+        id: "token-data",
+        name: "Token Data Service",
+        description: "Deep crypto token metrics from CoinGecko. Returns price, market cap, 24h volume, GitHub URL, contract address, FDV, circulating supply, description, and categories.",
+        endpoint: "http://localhost:4001/api/token-data",
+        method: "GET",
+        price: "$0.01",
+        category: "market-data",
+        params: "?query=TOKEN_NAME (e.g. ?query=VVV or ?query=bitcoin) OR ?top=N for top N tokens",
+        example_url: "http://localhost:4001/api/token-data?query=VVV",
+        provider_wallet: PROVIDER_PUB,
+        contact: "agenthub-team",
+        status: "approved",
+        registered_at: "2026-04-11T00:00:00.000Z",
+        approved_at: "2026-04-11T00:00:00.000Z",
+      },
+      {
+        id: "github-auditor",
+        name: "GitHub Auditor Service",
+        description: "Deep GitHub repository audit. Analyzes commit velocity, top contributors, language breakdown, license check, security policies, and calculates a trust score.",
+        endpoint: "http://localhost:4002/api/audit",
+        method: "GET",
+        price: "$0.05",
+        category: "code-audit",
+        params: "?repo=OWNER/REPO (e.g. ?repo=stellar/soroban-sdk)",
+        example_url: "http://localhost:4002/api/audit?repo=stellar/soroban-sdk",
+        provider_wallet: PROVIDER_PUB,
+        contact: "agenthub-team",
+        status: "approved",
+        registered_at: "2026-04-11T00:00:00.000Z",
+        approved_at: "2026-04-11T00:00:00.000Z",
+      },
+      {
+        id: "web-research",
+        name: "Web Research Service",
+        description: "Fetches and extracts readable text content from any URL. Strips HTML to clean text. Use this to analyze project websites, whitepapers, and documentation.",
+        endpoint: "http://localhost:4003/api/research",
+        method: "POST",
+        price: "$0.02",
+        category: "web-scraping",
+        params: "POST body: { \"url\": \"https://example.com\" }",
+        example_url: "http://localhost:4003/api/research",
+        provider_wallet: PROVIDER_PUB,
+        contact: "agenthub-team",
+        status: "approved",
+        registered_at: "2026-04-11T00:00:00.000Z",
+        approved_at: "2026-04-11T00:00:00.000Z",
+      },
+    ],
+  };
+  fs.writeFileSync(REGISTRY_FILE, JSON.stringify(defaultRegistry, null, 2));
+  console.log("📦 Seeded default tool registry (3 tools).");
+}
 
 const services = [
   { name: "🧠 Backend API", path: path.join(__dirname, "packages/gateway/server.js") },
