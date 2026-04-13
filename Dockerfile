@@ -3,6 +3,9 @@
 
 FROM node:20-slim
 
+# Install CA certificates for outbound HTTPS (Stellar RPC, x402, CoinGecko)
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy package files
@@ -20,8 +23,8 @@ COPY start-services.js ./
 RUN mkdir -p data/agents
 
 # The backend listens on PORT env (default 4000)
-# Cloud Run sets PORT automatically
 ENV NODE_ENV=production
+ENV REGISTRY_URL=http://localhost:4000
 
 # Expose default port
 EXPOSE 4000

@@ -203,6 +203,28 @@ app.use(express.static(path.join(__dirname, "../../public")));
 // Health check (Cloud Run liveness probe)
 app.get("/health", (_, res) => res.json({ status: "ok", uptime: process.uptime(), timestamp: new Date().toISOString() }));
 
+// Diagnostic: check internal tool services + external HTTPS connectivity
+app.get("/health/tools", async (_, res) => {
+  const checks = {};
+  const testUrl = async (name, url) => {
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      checks[name] = { status: r.status, ok: true };
+    } catch (e) {
+      checks[name] = { error: e.message, ok: false };
+    }
+  };
+  await Promise.all([
+    testUrl("token-data (4001)", "http://localhost:4001/"),
+    testUrl("github-auditor (4002)", "http://localhost:4002/"),
+    testUrl("web-research (4003)", "http://localhost:4003/"),
+    testUrl("coingecko", "https://api.coingecko.com/api/v3/ping"),
+    testUrl("stellar-rpc", "https://soroban-testnet.stellar.org"),
+    testUrl("x402-facilitator", FACILITATOR_URL),
+  ]);
+  res.json({ checks, all_ok: Object.values(checks).every(c => c.ok) });
+});
+
 // ─── Auth Middleware ──────────────────────────────────────────────────────────
 
 function requireAdmin(req, res, next) {
